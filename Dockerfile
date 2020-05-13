@@ -1,11 +1,8 @@
-FROM elasticsearch
-# this image on docker hub is deprecated (see https://hub.docker.com/_/elasticsearch/)
-# I am still using is because of docker hub's auto update
-# official:
-#FROM docker.elastic.co/elasticsearch/elasticsearch:7.6.2
+FROM elasticsearch:6.8.8
 
-RUN bin/elasticsearch-plugin --batch install ingest-attachment
-
-# remove x-pack because of license problems spamming log file with massive amounts of errors
-#RUN elasticsearch-plugin remove x-pack --purge \
-#    &&  sed -i 's/^xpack/#xpack/' config/elasticsearch.yml
+RUN /usr/share/elasticsearch/bin/elasticsearch-plugin install --batch ingest-attachment && \
+    yum-config-manager --add-repo https://download.opensuse.org/repositories/home:/Alexander_Pozdnyakov/CentOS_7/ && \
+    rpm --import https://build.opensuse.org/projects/home:Alexander_Pozdnyakov/public_key && \
+    yum update -y && \
+    yum install tesseract {% for language in tessreact_language_packs %}tesseract-langpack-{{language }} {% endfor %} -y && \
+    yum clean all
